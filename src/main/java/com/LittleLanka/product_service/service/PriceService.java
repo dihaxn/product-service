@@ -7,7 +7,7 @@ import com.LittleLanka.product_service.dto.response.ResponsePriceListDTO;
 
 import java.util.List;
 
-public interface PriceUpdateService {
+public interface PriceService {
     PriceUpdateDTO updatePrice(RequestPriceUpdateDto requestPriceUpdateDto);
 
     Double getPriceByDateAndProductId(String date, Long id);
