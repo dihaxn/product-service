@@ -20,7 +20,7 @@ public class PriceController {
     @Autowired
     private PriceService priceService;
 
-    @PutMapping("/price")
+    @PutMapping("")
     public ResponseEntity<StandardResponse> updatePrice(@RequestBody RequestPriceUpdateDto requestPriceUpdateDto) {
         PriceUpdateDTO priceUpdateDTO= priceService.updatePrice(requestPriceUpdateDto);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(), "Successfully updated price",priceUpdateDTO),
