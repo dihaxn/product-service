@@ -14,4 +14,7 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
     Boolean existsByOutletIdAndProduct(Long outletId, Product product);
 
     List<Stock> getAllByOutletId(Long outletId);
+
+    Stock findByOutletIdAndProduct(Long outletId, Product product);
+
 }
