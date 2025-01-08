@@ -11,6 +11,6 @@ import java.util.List;
 @Data
 public class RequestUpdateStockDTO {
     private Long outletId;
-    private boolean status;
+    private boolean isIncrease;
     private List<RequestProductListDTO> productList;
 }

@@ -70,13 +70,13 @@ public class StockServiceIMPL implements StockService {
     public ResponseUpdateStockDTO updateStockByOutletIdAndProductList(RequestUpdateStockDTO requestUpdateStockDTO) {
         Long outletId=requestUpdateStockDTO.getOutletId();
         List<RequestProductListDTO> productList = requestUpdateStockDTO.getProductList();
-        boolean status = requestUpdateStockDTO.isStatus();
+        boolean isIncrease = requestUpdateStockDTO.isIncrease();
         List<RequestProductListDTO> updatedProductList=new ArrayList<>();
 
         for (RequestProductListDTO product : productList) {
             Stock stock = stockRepository.findByOutletIdAndProduct(outletId, productRepository.getReferenceById(product.getProductId()));
             double updateStockQuantity;
-            if(status){
+            if(isIncrease){
                 updateStockQuantity=stock.getStockQuantity()+product.getStockQuantity();
             }else{
                 if(stock.getStockQuantity()<product.getStockQuantity()){
