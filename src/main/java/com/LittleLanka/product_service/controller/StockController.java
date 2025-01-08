@@ -2,7 +2,9 @@ package com.LittleLanka.product_service.controller;
 
 import com.LittleLanka.product_service.dto.StockDTO;
 import com.LittleLanka.product_service.dto.request.RequestStockUpdateDto;
+import com.LittleLanka.product_service.dto.request.RequestUpdateStockDTO;
 import com.LittleLanka.product_service.dto.response.ResponseStockDto;
+import com.LittleLanka.product_service.dto.response.ResponseUpdateStockDTO;
 import com.LittleLanka.product_service.service.StockService;
 import com.LittleLanka.product_service.util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,4 +41,12 @@ public class StockController {
         return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(),"Successfully updated stock",stockDtoList),
                 HttpStatus.CREATED);
     }
+
+    @PutMapping("/update-stock-by-outletId-productList")
+    public ResponseEntity<StandardResponse> updateStockByOutletIdAndProductList(@RequestBody RequestUpdateStockDTO requestUpdateStockDTO) {
+        ResponseUpdateStockDTO responseUpdateStockDTO= stockService.updateStockByOutletIdAndProductList(requestUpdateStockDTO);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(),"Successfully updated stock",responseUpdateStockDTO),
+                HttpStatus.CREATED);
+    }
+
 }
