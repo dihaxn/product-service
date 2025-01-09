@@ -10,6 +10,7 @@ import com.LittleLanka.product_service.entity.Product;
 import com.LittleLanka.product_service.repository.PriceUpdateRepository;
 import com.LittleLanka.product_service.repository.ProductRepository;
 import com.LittleLanka.product_service.service.PriceService;
+import com.LittleLanka.product_service.util.functions.ServiceFuntions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,29 +28,19 @@ public class PriceServiceIMPL implements PriceService {
     private ProductRepository productRepository;
     @Autowired
     private ModelMapper modelMapper;
-
-    private Date makeDate(String date){
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date dateObj = null;
-        try {
-            dateObj = formatter.parse(date);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return dateObj;
-    }
-
+    @Autowired
+    private ServiceFuntions serviceFuntions;
 
 
     @Override
     public Double getPriceByDateAndProductId(String date, Long id) {
-        Date dateObj = makeDate(date);
+        Date dateObj = serviceFuntions.makeDate(date);
         return priceUpdateRepository.findPriceUpdateByPriceUpdateDateAndProductId(dateObj, id);
     }
 
     @Override
     public List<ResponsePriceListDTO> getPriceListByDate(String date) {
-        Date dateObj = makeDate(date);
+        Date dateObj = serviceFuntions.makeDate(date);
         List<PriceListInterface> priceListDTOS = priceUpdateRepository.findProductIdAndPriceByDateEquals(dateObj);
         List<ResponsePriceListDTO> responsePriceListDTOS = new ArrayList<>();
         for (PriceListInterface priceListDTO : priceListDTOS) {
