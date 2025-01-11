@@ -7,6 +7,7 @@ import com.LittleLanka.product_service.entity.Product;
 import com.LittleLanka.product_service.repository.PriceUpdateRepository;
 import com.LittleLanka.product_service.repository.ProductRepository;
 import com.LittleLanka.product_service.service.ProductService;
+import com.LittleLanka.product_service.util.functions.ServiceFuntions;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,10 +27,10 @@ public class ProductServiceIMPL implements ProductService {
     @Autowired
     private ProductRepository productRepository;
     @Autowired
-    private PriceUpdateRepository priceUpdateRepository;
-    @Autowired
     private ModelMapper modelMapper;
-    private final String IMAGE_UPLOAD_DIR = "src/main/java/com/LittleLanka/product_service/assets/";
+    @Autowired
+    private ServiceFuntions serviceFuntions;
+
 
     @Override
     public ProductDTO saveProduct(RequestSaveProductDto requestSaveProductDTO) {
@@ -38,6 +39,7 @@ public class ProductServiceIMPL implements ProductService {
         if(image != null && !image.isEmpty()) {
             try {
                 String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+                String IMAGE_UPLOAD_DIR = "src/main/java/com/LittleLanka/product_service/assets/";
                 Path imagePath = Paths.get(IMAGE_UPLOAD_DIR, fileName);
                 Files.createDirectories(imagePath.getParent());
                 Files.write(imagePath, image.getBytes());
@@ -60,15 +62,14 @@ public class ProductServiceIMPL implements ProductService {
 
     @Override
     public List<ResponseGetAllProductsDTO> getAllProducts() {
-        List<Product> products = productRepository.findAllByProductStatusEquals(true);
-        List<ResponseGetAllProductsDTO> responseGetAllProductsDTOList = new ArrayList<>();
-        for (Product product : products) {
-            ResponseGetAllProductsDTO allProductsDTO = modelMapper.map(product, ResponseGetAllProductsDTO.class);
-            Double price = priceUpdateRepository.findPriceUpdateByPriceUpdateDateAndProductId(new Date(), product.getProductId());
-            allProductsDTO.setPrice(price);
-            responseGetAllProductsDTOList.add(allProductsDTO);
-        }
-        return responseGetAllProductsDTOList;
+        List<Product> products = productRepository.findAll();
+        return serviceFuntions.getResponseGetAllProductsDTOS(products);
+    }
+
+    @Override
+    public List<ResponseGetAllProductsDTO> getAllProductsByName(String productName) {
+        List<Product> products = productRepository.findByProductNameContainingIgnoreCase(productName);
+        return serviceFuntions.getResponseGetAllProductsDTOS(products);
     }
 
 }
