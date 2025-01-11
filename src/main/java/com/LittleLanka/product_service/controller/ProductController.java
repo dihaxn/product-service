@@ -34,4 +34,11 @@ public class ProductController {
                 HttpStatus.OK);
     }
 
+    @GetMapping(value = "/get-all-products-by-name/{name}")
+    public ResponseEntity<StandardResponse> getAllProductsByName(@PathVariable(value = "name") String productName) {
+        List<ResponseGetAllProductsDTO> allProductsDTOS = productService.getAllProductsByName(productName);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", allProductsDTOS),
+                HttpStatus.OK);
+    }
+
 }

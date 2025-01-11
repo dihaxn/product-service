@@ -11,4 +11,7 @@ public interface ProductService {
     ProductDTO saveProduct(RequestSaveProductDto requestSaveProductDTO);
 
     List<ResponseGetAllProductsDTO> getAllProducts();
+
+    List<ResponseGetAllProductsDTO> getAllProductsByName(String productName);
+
 }

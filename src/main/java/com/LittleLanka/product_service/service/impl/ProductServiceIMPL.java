@@ -31,6 +31,21 @@ public class ProductServiceIMPL implements ProductService {
     private ModelMapper modelMapper;
     private final String IMAGE_UPLOAD_DIR = "src/main/java/com/LittleLanka/product_service/assets/";
 
+    private List<ResponseGetAllProductsDTO> getResponseGetAllProductsDTOS(List<Product> products) {
+        List<ResponseGetAllProductsDTO> responseGetAllProductsDTOList = new ArrayList<>();
+        for (Product product : products) {
+            ResponseGetAllProductsDTO allProductsDTO = modelMapper.map(product, ResponseGetAllProductsDTO.class);
+            Double price = priceUpdateRepository.findPriceUpdateByPriceUpdateDateAndProductId(new Date(), product.getProductId());
+            allProductsDTO.setPrice(price);
+            responseGetAllProductsDTOList.add(allProductsDTO);
+        }
+        return responseGetAllProductsDTOList;
+    }
+
+
+
+
+
     @Override
     public ProductDTO saveProduct(RequestSaveProductDto requestSaveProductDTO) {
         MultipartFile image = requestSaveProductDTO.getImageFile();
@@ -60,15 +75,14 @@ public class ProductServiceIMPL implements ProductService {
 
     @Override
     public List<ResponseGetAllProductsDTO> getAllProducts() {
-        List<Product> products = productRepository.findAllByProductStatusEquals(true);
-        List<ResponseGetAllProductsDTO> responseGetAllProductsDTOList = new ArrayList<>();
-        for (Product product : products) {
-            ResponseGetAllProductsDTO allProductsDTO = modelMapper.map(product, ResponseGetAllProductsDTO.class);
-            Double price = priceUpdateRepository.findPriceUpdateByPriceUpdateDateAndProductId(new Date(), product.getProductId());
-            allProductsDTO.setPrice(price);
-            responseGetAllProductsDTOList.add(allProductsDTO);
-        }
-        return responseGetAllProductsDTOList;
+        List<Product> products = productRepository.findAll();
+        return getResponseGetAllProductsDTOS(products);
+    }
+
+    @Override
+    public List<ResponseGetAllProductsDTO> getAllProductsByName(String productName) {
+        List<Product> products = productRepository.findByProductNameContainingIgnoreCase(productName);
+        return getResponseGetAllProductsDTOS(products);
     }
 
 }
