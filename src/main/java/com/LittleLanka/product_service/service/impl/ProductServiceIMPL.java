@@ -8,8 +8,10 @@ import com.LittleLanka.product_service.repository.PriceUpdateRepository;
 import com.LittleLanka.product_service.repository.ProductRepository;
 import com.LittleLanka.product_service.service.ProductService;
 import com.LittleLanka.product_service.util.functions.ServiceFuntions;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,18 +19,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
+@AllArgsConstructor
 public class ProductServiceIMPL implements ProductService {
-    @Autowired
     private ProductRepository productRepository;
-    @Autowired
     private ModelMapper modelMapper;
-    @Autowired
     private ServiceFuntions serviceFuntions;
 
 
@@ -68,7 +65,9 @@ public class ProductServiceIMPL implements ProductService {
 
     @Override
     public List<ResponseGetAllProductsDTO> getAllProductsByName(String productName) {
-        List<Product> products = productRepository.findByProductNameContainingIgnoreCase(productName);
+        List<Product> products = productRepository.findByProductNameContainingIgnoreCaseAndProductStatusIsTrue(
+                productName, Sort.by("productName"));
+        products.sort(Comparator.comparing(product -> !product.getProductName().toLowerCase().startsWith(productName.toLowerCase())));
         return serviceFuntions.getResponseGetAllProductsDTOS(products);
     }
 
