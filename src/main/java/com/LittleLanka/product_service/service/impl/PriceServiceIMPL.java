@@ -11,6 +11,7 @@ import com.LittleLanka.product_service.repository.PriceUpdateRepository;
 import com.LittleLanka.product_service.repository.ProductRepository;
 import com.LittleLanka.product_service.service.PriceService;
 import com.LittleLanka.product_service.util.functions.ServiceFuntions;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,14 +22,11 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class PriceServiceIMPL implements PriceService {
-    @Autowired
     private PriceUpdateRepository priceUpdateRepository;
-    @Autowired
     private ProductRepository productRepository;
-    @Autowired
     private ModelMapper modelMapper;
-    @Autowired
     private ServiceFuntions serviceFuntions;
 
 
