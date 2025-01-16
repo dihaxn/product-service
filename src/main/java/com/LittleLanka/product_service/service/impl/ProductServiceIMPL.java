@@ -71,4 +71,10 @@ public class ProductServiceIMPL implements ProductService {
         return serviceFuntions.getResponseGetAllProductsDTOS(products);
     }
 
+    @Override
+    public List<ResponseGetAllProductsDTO> getAllProductsByStatus(boolean status) {
+        List<Product> products = productRepository.findAllByProductStatusEquals(status);
+        return serviceFuntions.getResponseGetAllProductsDTOS(products);
+    }
+
 }

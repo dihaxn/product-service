@@ -21,11 +21,8 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class StockServiceIMPL implements StockService {
-    @Autowired
     private ModelMapper modelMapper;
-    @Autowired
     private StockRepository stockRepository;
-    @Autowired
     private ProductRepository productRepository;
 
     @Override
