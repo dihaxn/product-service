@@ -13,4 +13,6 @@ public interface ProductService {
     List<ResponseGetAllProductsDTO> getAllProducts();
 
     List<ResponseGetAllProductsDTO> getAllProductsByName(String productName);
+
+    List<ResponseGetAllProductsDTO> getAllProductsByStatus(boolean status);
 }

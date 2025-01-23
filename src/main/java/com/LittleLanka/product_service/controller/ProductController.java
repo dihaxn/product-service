@@ -38,9 +38,17 @@ public class ProductController {
     }
 
     // get all products by name
-    @GetMapping("/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<StandardResponse> getAllProductsByName(@PathVariable(value = "name") String productName) {
         List<ResponseGetAllProductsDTO> allProductsDTOS = productService.getAllProductsByName(productName);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", allProductsDTOS),
+                HttpStatus.OK);
+    }
+
+    // get all products by status
+    @GetMapping(value = "/status/{status}")
+    public ResponseEntity<StandardResponse> getAllProductsByStatus(@PathVariable(value = "status") boolean status) {
+        List<ResponseGetAllProductsDTO> allProductsDTOS = productService.getAllProductsByStatus(status);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", allProductsDTOS),
                 HttpStatus.OK);
     }
