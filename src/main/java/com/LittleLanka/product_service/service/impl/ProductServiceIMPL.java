@@ -4,6 +4,7 @@ import com.LittleLanka.product_service.dto.ProductDTO;
 import com.LittleLanka.product_service.dto.request.*;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.entity.Product;
+import com.LittleLanka.product_service.entity.enums.CatagoryType;
 import com.LittleLanka.product_service.repository.PriceUpdateRepository;
 import com.LittleLanka.product_service.repository.ProductRepository;
 import com.LittleLanka.product_service.service.ProductService;
@@ -74,6 +75,12 @@ public class ProductServiceIMPL implements ProductService {
     @Override
     public List<ResponseGetAllProductsDTO> getAllProductsByStatus(boolean status) {
         List<Product> products = productRepository.findAllByProductStatusEquals(status);
+        return serviceFuntions.getResponseGetAllProductsDTOS(products);
+    }
+
+    @Override
+    public List<ResponseGetAllProductsDTO> getAllProductsByCategory(CatagoryType category) {
+        List<Product> products = productRepository.findAllByProductCatagoryEquals(category);
         return serviceFuntions.getResponseGetAllProductsDTOS(products);
     }
 

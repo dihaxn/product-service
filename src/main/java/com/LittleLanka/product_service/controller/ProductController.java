@@ -3,6 +3,7 @@ package com.LittleLanka.product_service.controller;
 import com.LittleLanka.product_service.dto.ProductDTO;
 import com.LittleLanka.product_service.dto.request.RequestSaveProductDto;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
+import com.LittleLanka.product_service.entity.enums.CatagoryType;
 import com.LittleLanka.product_service.service.ProductService;
 import com.LittleLanka.product_service.util.StandardResponse;
 import lombok.AllArgsConstructor;
@@ -50,6 +51,14 @@ public class ProductController {
     public ResponseEntity<StandardResponse> getAllProductsByStatus(@PathVariable(value = "status") boolean status) {
         List<ResponseGetAllProductsDTO> allProductsDTOS = productService.getAllProductsByStatus(status);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", allProductsDTOS),
+                HttpStatus.OK);
+    }
+
+    // get all products by category
+    @GetMapping("category/{category}")
+    public ResponseEntity<StandardResponse> getAllProductsByCategory(@PathVariable(value = "category") CatagoryType category) {
+        List<ResponseGetAllProductsDTO> allProductsDTOS = productService.getAllProductsByCategory(category);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully ftech all products", allProductsDTOS),
                 HttpStatus.OK);
     }
 
