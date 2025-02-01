@@ -18,4 +18,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findAllByProductStatusEquals(boolean status);
 
     List<Product> findByProductNameContainingIgnoreCaseAndProductStatusIsTrue(String productName, Sort sort);
+
+    List<Product> findAllByProductCatagoryEquals(CatagoryType category);
 }
