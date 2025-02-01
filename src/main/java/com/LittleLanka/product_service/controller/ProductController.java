@@ -1,6 +1,7 @@
 package com.LittleLanka.product_service.controller;
 
 import com.LittleLanka.product_service.dto.ProductDTO;
+import com.LittleLanka.product_service.dto.paginated.PaginatedResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.request.RequestSaveProductDto;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.entity.enums.CatagoryType;
@@ -32,33 +33,48 @@ public class ProductController {
 
     // get all products
     @GetMapping
-    public ResponseEntity<StandardResponse> getAllProducts() {
-        List<ResponseGetAllProductsDTO> allProductsDTOS = productService.getAllProducts();
-        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", allProductsDTOS),
+    public ResponseEntity<StandardResponse> getAllProducts(
+            @RequestParam int page,
+            @RequestParam int size
+    ) {
+        PaginatedResponseGetAllProductsDTO paginatedAllProducts = productService.getAllProducts(page, size);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", paginatedAllProducts),
                 HttpStatus.OK);
     }
 
     // get all products by name
     @GetMapping("/name/{name}")
-    public ResponseEntity<StandardResponse> getAllProductsByName(@PathVariable(value = "name") String productName) {
-        List<ResponseGetAllProductsDTO> allProductsDTOS = productService.getAllProductsByName(productName);
-        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", allProductsDTOS),
+    public ResponseEntity<StandardResponse> getAllProductsByName(
+            @PathVariable(value = "name") String productName,
+            @RequestParam int page,
+            @RequestParam int size
+    ) {
+        PaginatedResponseGetAllProductsDTO paginatedAllProducts = productService.getAllProductsByName(productName, page, size);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", paginatedAllProducts),
                 HttpStatus.OK);
     }
 
     // get all products by status
     @GetMapping(value = "/status/{status}")
-    public ResponseEntity<StandardResponse> getAllProductsByStatus(@PathVariable(value = "status") boolean status) {
-        List<ResponseGetAllProductsDTO> allProductsDTOS = productService.getAllProductsByStatus(status);
-        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", allProductsDTOS),
+    public ResponseEntity<StandardResponse> getAllProductsByStatus(
+            @PathVariable(value = "status") boolean status,
+            @RequestParam int page,
+            @RequestParam int size
+    ) {
+        PaginatedResponseGetAllProductsDTO paginatedAllProducts = productService.getAllProductsByStatus(status, page, size);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", paginatedAllProducts),
                 HttpStatus.OK);
     }
 
     // get all products by category
     @GetMapping("category/{category}")
-    public ResponseEntity<StandardResponse> getAllProductsByCategory(@PathVariable(value = "category") CatagoryType category) {
-        List<ResponseGetAllProductsDTO> allProductsDTOS = productService.getAllProductsByCategory(category);
-        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully ftech all products", allProductsDTOS),
+    public ResponseEntity<StandardResponse> getAllProductsByCategory(
+            @PathVariable(value = "category") CatagoryType category,
+            @RequestParam int page,
+            @RequestParam int size
+    ) {
+        PaginatedResponseGetAllProductsDTO paginatedAllProducts = productService.getAllProductsByCategory(category, page, size);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", paginatedAllProducts),
                 HttpStatus.OK);
     }
 
