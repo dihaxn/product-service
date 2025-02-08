@@ -1,6 +1,7 @@
 package com.LittleLanka.product_service.service.impl;
 
 import com.LittleLanka.product_service.dto.ProductDTO;
+import com.LittleLanka.product_service.dto.paginated.PaginatedResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.request.*;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.entity.Product;
@@ -12,6 +13,9 @@ import com.LittleLanka.product_service.util.functions.ServiceFuntions;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,28 +63,34 @@ public class ProductServiceIMPL implements ProductService {
     }
 
     @Override
-    public List<ResponseGetAllProductsDTO> getAllProducts() {
-        List<Product> products = productRepository.findAll();
+    public PaginatedResponseGetAllProductsDTO getAllProducts(int page, int size) {
+        Page<Product> products = productRepository.findAll(PageRequest.of(page, size));
         return serviceFuntions.getResponseGetAllProductsDTOS(products);
     }
 
     @Override
-    public List<ResponseGetAllProductsDTO> getAllProductsByName(String productName) {
-        List<Product> products = productRepository.findByProductNameContainingIgnoreCaseAndProductStatusIsTrue(
-                productName, Sort.by("productName"));
-        products.sort(Comparator.comparing(product -> !product.getProductName().toLowerCase().startsWith(productName.toLowerCase())));
+    public PaginatedResponseGetAllProductsDTO getAllProductsByName(String productName, int page, int size) {
+        Page<Product> products = productRepository.findByProductNameContainingIgnoreCaseAndProductStatusIsTrue(
+                productName, PageRequest.of(page, size, Sort.by("productName"))
+        );
+
+        List<Product> sortedProducts = new ArrayList<>(products.getContent());
+        sortedProducts.sort(Comparator.comparing(product -> !product.getProductName().toLowerCase().startsWith(productName.toLowerCase())));
+
+        Page<Product> sortedPage = new PageImpl<>(sortedProducts, products.getPageable(), products.getTotalElements());
+        return serviceFuntions.getResponseGetAllProductsDTOS(sortedPage);
+
+    }
+
+    @Override
+    public PaginatedResponseGetAllProductsDTO getAllProductsByStatus(boolean status, int page, int size) {
+        Page<Product> products = productRepository.findAllByProductStatusEquals(status, PageRequest.of(page, size));
         return serviceFuntions.getResponseGetAllProductsDTOS(products);
     }
 
     @Override
-    public List<ResponseGetAllProductsDTO> getAllProductsByStatus(boolean status) {
-        List<Product> products = productRepository.findAllByProductStatusEquals(status);
-        return serviceFuntions.getResponseGetAllProductsDTOS(products);
-    }
-
-    @Override
-    public List<ResponseGetAllProductsDTO> getAllProductsByCategory(CatagoryType category) {
-        List<Product> products = productRepository.findAllByProductCatagoryEquals(category);
+    public PaginatedResponseGetAllProductsDTO getAllProductsByCategory(CatagoryType category, int page, int size) {
+        Page<Product> products = productRepository.findAllByProductCatagoryEquals(category, PageRequest.of(page, size));
         return serviceFuntions.getResponseGetAllProductsDTOS(products);
     }
 

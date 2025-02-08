@@ -2,6 +2,8 @@ package com.LittleLanka.product_service.repository;
 
 import com.LittleLanka.product_service.entity.Product;
 import com.LittleLanka.product_service.entity.enums.CatagoryType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,9 +17,9 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     boolean existsByProductCatagoryAndProductName(CatagoryType productCatagory, String productName);
 
-    List<Product> findAllByProductStatusEquals(boolean status);
+    Page<Product> findAllByProductStatusEquals(boolean status, Pageable pageable);
 
-    List<Product> findByProductNameContainingIgnoreCaseAndProductStatusIsTrue(String productName, Sort sort);
+    Page<Product> findByProductNameContainingIgnoreCaseAndProductStatusIsTrue(String productName, Pageable pageable);
 
-    List<Product> findAllByProductCatagoryEquals(CatagoryType category);
+    Page<Product> findAllByProductCatagoryEquals(CatagoryType productCatagory, Pageable pageable);
 }

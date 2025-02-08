@@ -1,11 +1,13 @@
 package com.LittleLanka.product_service.util.functions;
 
+import com.LittleLanka.product_service.dto.paginated.PaginatedResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.entity.Product;
 import com.LittleLanka.product_service.repository.PriceUpdateRepository;
 import com.LittleLanka.product_service.service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -31,14 +33,16 @@ public class ServiceFuntions {
         return dateObj;
     }
 
-    public List<ResponseGetAllProductsDTO> getResponseGetAllProductsDTOS(List<Product> products) {
-        List<ResponseGetAllProductsDTO> responseGetAllProductsDTOList = new ArrayList<>();
+    public PaginatedResponseGetAllProductsDTO getResponseGetAllProductsDTOS(Page<Product> products) {
+        List<ResponseGetAllProductsDTO> responseList = new ArrayList<>();
+
         for (Product product : products) {
-            ResponseGetAllProductsDTO allProductsDTO = modelMapper.map(product, ResponseGetAllProductsDTO.class);
+            ResponseGetAllProductsDTO productDTO = modelMapper.map(product, ResponseGetAllProductsDTO.class);
             Double price = priceUpdateRepository.findPriceUpdateByPriceUpdateDateAndProductId(new Date(), product.getProductId());
-            allProductsDTO.setPrice(price);
-            responseGetAllProductsDTOList.add(allProductsDTO);
+            productDTO.setPrice(price);
+            responseList.add(productDTO);
         }
-        return responseGetAllProductsDTOList;
+
+        return new PaginatedResponseGetAllProductsDTO(responseList, products.getTotalElements());
     }
 }

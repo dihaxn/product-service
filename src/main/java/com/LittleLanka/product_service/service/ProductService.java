@@ -1,9 +1,11 @@
 package com.LittleLanka.product_service.service;
 
 import com.LittleLanka.product_service.dto.ProductDTO;
+import com.LittleLanka.product_service.dto.paginated.PaginatedResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.request.*;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.entity.enums.CatagoryType;
+import org.springframework.core.io.Resource;
 
 import java.util.List;
 
@@ -11,11 +13,11 @@ import java.util.List;
 public interface ProductService {
     ProductDTO saveProduct(RequestSaveProductDto requestSaveProductDTO);
 
-    List<ResponseGetAllProductsDTO> getAllProducts();
+    PaginatedResponseGetAllProductsDTO getAllProducts(int page, int size);
 
-    List<ResponseGetAllProductsDTO> getAllProductsByName(String productName);
+    PaginatedResponseGetAllProductsDTO getAllProductsByName(String productName, int page, int size);
 
-    List<ResponseGetAllProductsDTO> getAllProductsByStatus(boolean status);
+    PaginatedResponseGetAllProductsDTO getAllProductsByStatus(boolean status, int page, int size);
 
-    List<ResponseGetAllProductsDTO> getAllProductsByCategory(CatagoryType category);
+    PaginatedResponseGetAllProductsDTO getAllProductsByCategory(CatagoryType category, int page, int size);;
 }
