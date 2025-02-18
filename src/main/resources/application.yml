@@ -11,4 +11,6 @@ spring:
 server:
   port: 8080
 
+#jdbc:mysql://user-service-database.crmk6gmiy488.eu-north-1.rds.amazonaws.com:3306/UserDb?createDatabaseIfNotExist=true
+
 
