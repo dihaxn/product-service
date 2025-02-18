@@ -27,9 +27,11 @@ import java.util.List;
 @AllArgsConstructor
 public class StockServiceIMPL implements StockService {
 
+
     private ModelMapper modelMapper;
 
     private StockRepository stockRepository;
+
 
     private ProductRepository productRepository;
 

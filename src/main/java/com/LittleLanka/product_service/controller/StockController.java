@@ -22,9 +22,13 @@ import java.util.List;
 @AllArgsConstructor
 public class StockController {
 
+
     private final StockService stockService;
 
-    @PostMapping("/stock-initialize")
+
+
+    // initialize a stock
+    @PostMapping
     public ResponseEntity<StandardResponse> initializeStock(@RequestBody StockDTO stockDTO) {
         StockDTO stockDTO1=stockService.initializeStock(stockDTO);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(),
@@ -32,19 +36,23 @@ public class StockController {
                 HttpStatus.CREATED);
     }
 
-    @PutMapping("stock-update-by-id-Qty")
+    // update stock by id
+    @PutMapping
     public ResponseEntity<StandardResponse> updateStockById(@RequestBody RequestStockUpdateDto requestStockUpdate) {
         StockDTO stockDTO=stockService.updateStockByIdQty(requestStockUpdate);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(),"Successfully updated stock",stockDTO),
                 HttpStatus.CREATED);
     }
 
-    @GetMapping ("all-stocks/{outletId}")
+
+    // get stock by outlet id
+    @GetMapping("/{outletId}")
     public ResponseEntity<StandardResponse> getAllStocksOutlet(@PathVariable(value = "outletId")Long outletId) {
         List<ResponseStockDto> stockDtoList=stockService.getAllStocksOutlet(outletId);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(),"Successfully updated stock",stockDtoList),
                 HttpStatus.CREATED);
     }
+
 
     @GetMapping ("all-info/{outletId}")
     public ResponseEntity<StandardResponse> getAllStockFullInfoOutlet(@PathVariable(value = "outletId")Long outletId) {
@@ -53,7 +61,9 @@ public class StockController {
                 HttpStatus.CREATED);
     }
 
-    @PutMapping("/update-stock-by-outletId-productList")
+
+    // get stock by outlet id and product list
+    @PutMapping("/by-outletId-productList")
     public ResponseEntity<StandardResponse> updateStockByOutletIdAndProductList(@RequestBody RequestUpdateStockDTO requestUpdateStockDTO) {
         ResponseUpdateStockDTO responseUpdateStockDTO= stockService.updateStockByOutletIdAndProductList(requestUpdateStockDTO);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(),"Successfully updated stock",responseUpdateStockDTO),
