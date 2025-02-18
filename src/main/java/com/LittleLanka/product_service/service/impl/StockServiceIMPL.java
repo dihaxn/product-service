@@ -4,9 +4,13 @@ import com.LittleLanka.product_service.dto.StockDTO;
 import com.LittleLanka.product_service.dto.request.RequestProductListDTO;
 import com.LittleLanka.product_service.dto.request.RequestStockUpdateDto;
 import com.LittleLanka.product_service.dto.request.RequestUpdateStockDTO;
+import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
+import com.LittleLanka.product_service.dto.response.ResponseInventryDto;
 import com.LittleLanka.product_service.dto.response.ResponseStockDto;
 import com.LittleLanka.product_service.dto.response.ResponseUpdateStockDTO;
+import com.LittleLanka.product_service.entity.Product;
 import com.LittleLanka.product_service.entity.Stock;
+import com.LittleLanka.product_service.repository.PriceUpdateRepository;
 import com.LittleLanka.product_service.repository.ProductRepository;
 import com.LittleLanka.product_service.repository.StockRepository;
 import com.LittleLanka.product_service.service.StockService;
@@ -16,14 +20,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class StockServiceIMPL implements StockService {
+
+
     private ModelMapper modelMapper;
+
     private StockRepository stockRepository;
+
+
     private ProductRepository productRepository;
+
+    private PriceUpdateRepository priceUpdateRepository;
 
     @Override
     public StockDTO initializeStock(StockDTO stockDTO) {
@@ -90,6 +102,29 @@ public class StockServiceIMPL implements StockService {
         responseUpdateStockDTO.setOutletId(outletId);
         responseUpdateStockDTO.setProductList(updatedProductList);
         return responseUpdateStockDTO;
+    }
+
+    @Override
+    public List<ResponseInventryDto> getAllStockFullInfoOutlet(Long outletId) {
+        List<Stock> stockList=stockRepository.getAllByOutletId(outletId);
+        Product product;
+        List<ResponseInventryDto> responseInventryDtoList=new ArrayList<>();
+
+
+        for(Stock stock:stockList){
+            product=productRepository.getReferenceById(stock.getProduct().getProductId());
+            Double price = priceUpdateRepository.findPriceUpdateByPriceUpdateDateAndProductId(new Date(), product.getProductId());
+
+            responseInventryDtoList.add(new ResponseInventryDto().builder()
+                    .productId(stock.getProduct().getProductId())
+                    .stockQuantity(stock.getStockQuantity())
+                    .productName(stock.getProduct().getProductName())
+                    .stockQuantity(stock.getStockQuantity())
+                            .imageUrl(product.getImageUrl())
+                            .price(price)
+                    .build());
+        }
+        return List.of();
     }
 
 }

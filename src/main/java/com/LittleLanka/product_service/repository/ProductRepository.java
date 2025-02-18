@@ -17,9 +17,14 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     boolean existsByProductCatagoryAndProductName(CatagoryType productCatagory, String productName);
 
+    List<Product> findAllByProductStatusEquals(boolean isActive);
+
+    List<Product> getProductByProductId(Long productId);
+
     Page<Product> findAllByProductStatusEquals(boolean status, Pageable pageable);
 
     Page<Product> findByProductNameContainingIgnoreCaseAndProductStatusIsTrue(String productName, Pageable pageable);
 
     Page<Product> findAllByProductCatagoryEquals(CatagoryType productCatagory, Pageable pageable);
+
 }

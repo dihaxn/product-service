@@ -3,6 +3,7 @@ package com.LittleLanka.product_service.controller;
 import com.LittleLanka.product_service.dto.StockDTO;
 import com.LittleLanka.product_service.dto.request.RequestStockUpdateDto;
 import com.LittleLanka.product_service.dto.request.RequestUpdateStockDTO;
+import com.LittleLanka.product_service.dto.response.ResponseInventryDto;
 import com.LittleLanka.product_service.dto.response.ResponseStockDto;
 import com.LittleLanka.product_service.dto.response.ResponseUpdateStockDTO;
 import com.LittleLanka.product_service.service.StockService;
@@ -20,7 +21,11 @@ import java.util.List;
 @RequestMapping("api/v1/stock")
 @AllArgsConstructor
 public class StockController {
-    private StockService stockService;
+
+
+    private final StockService stockService;
+
+
 
     // initialize a stock
     @PostMapping
@@ -39,6 +44,7 @@ public class StockController {
                 HttpStatus.CREATED);
     }
 
+
     // get stock by outlet id
     @GetMapping("/{outletId}")
     public ResponseEntity<StandardResponse> getAllStocksOutlet(@PathVariable(value = "outletId")Long outletId) {
@@ -46,6 +52,15 @@ public class StockController {
         return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(),"Successfully updated stock",stockDtoList),
                 HttpStatus.CREATED);
     }
+
+
+    @GetMapping ("all-info/{outletId}")
+    public ResponseEntity<StandardResponse> getAllStockFullInfoOutlet(@PathVariable(value = "outletId")Long outletId) {
+        List<ResponseInventryDto> stockInfoDtoList=stockService.getAllStockFullInfoOutlet(outletId);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(),"Successfully get  stock details",stockInfoDtoList),
+                HttpStatus.CREATED);
+    }
+
 
     // get stock by outlet id and product list
     @PutMapping("/by-outletId-productList")
