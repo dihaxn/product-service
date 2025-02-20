@@ -9,7 +9,9 @@ import com.LittleLanka.product_service.service.ProductService;
 import com.LittleLanka.product_service.util.StandardResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,14 @@ public class ProductController {
         ProductDTO productDTO = productService.saveProduct(requestSaveProductDTO);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(), "Successfully saved the product",productDTO),
                 HttpStatus.CREATED);
+    }
+
+    // get all products
+    @GetMapping("/all")
+    public ResponseEntity<StandardResponse> getAllProductsNormal() {
+        List<ResponseGetAllProductsDTO> allProducts = productService.getAllProductsNormal();
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", allProducts),
+                HttpStatus.OK);
     }
 
     // get all products
@@ -76,6 +86,13 @@ public class ProductController {
         PaginatedResponseGetAllProductsDTO paginatedAllProducts = productService.getAllProductsByCategory(category, page, size);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", paginatedAllProducts),
                 HttpStatus.OK);
+    }
+
+    // get image by url
+    @GetMapping("/url/{url}")
+    public ResponseEntity<Resource> getImageByUrl(@PathVariable(value = "url") String url) {
+        Resource imageResource = productService.getImageByUrl(url);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageResource);
     }
 
 }

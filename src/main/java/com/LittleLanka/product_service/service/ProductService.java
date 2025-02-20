@@ -20,4 +20,8 @@ public interface ProductService {
     PaginatedResponseGetAllProductsDTO getAllProductsByStatus(boolean status, int page, int size);
 
     PaginatedResponseGetAllProductsDTO getAllProductsByCategory(CatagoryType category, int page, int size);;
+
+    List<ResponseGetAllProductsDTO> getAllProductsNormal();
+
+    Resource getImageByUrl(String url);
 }
