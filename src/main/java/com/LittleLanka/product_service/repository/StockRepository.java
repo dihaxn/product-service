@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @EnableJpaRepositories
@@ -15,6 +16,7 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 
     List<Stock> getAllByOutletId(Long outletId);
 
-    Stock findByOutletIdAndProduct(Long outletId, Product product);
+    Optional<Stock> findByOutletIdAndProduct(Long outletId, Product product);
 
+    List<Stock> findAllByOutletId(long outletId);
 }
