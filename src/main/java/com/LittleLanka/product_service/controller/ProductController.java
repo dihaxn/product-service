@@ -3,6 +3,7 @@ package com.LittleLanka.product_service.controller;
 import com.LittleLanka.product_service.dto.ProductDTO;
 import com.LittleLanka.product_service.dto.paginated.PaginatedResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.request.RequestSaveProductDto;
+import com.LittleLanka.product_service.dto.request.RequestUpdateProductDTO;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.entity.enums.CatagoryType;
 import com.LittleLanka.product_service.service.ProductService;
@@ -30,6 +31,17 @@ public class ProductController {
     public ResponseEntity<StandardResponse> saveProduct(@ModelAttribute RequestSaveProductDto requestSaveProductDTO) {
         ProductDTO productDTO = productService.saveProduct(requestSaveProductDTO);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(), "Successfully saved the product",productDTO),
+                HttpStatus.CREATED);
+    }
+
+    // update a product
+    @PutMapping(consumes = {"multipart/form-data"}, params = "id")
+    public ResponseEntity<StandardResponse> updateProduct(
+            @ModelAttribute RequestUpdateProductDTO requestUpdateProductDTO,
+            @RequestParam(value = "id") int productId
+    ) {
+        ProductDTO updatedProduct = productService.updateProduct(requestUpdateProductDTO, productId);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(), "Successfully saved the product",updatedProduct),
                 HttpStatus.CREATED);
     }
 
