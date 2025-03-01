@@ -4,6 +4,7 @@ import com.LittleLanka.product_service.dto.ProductDTO;
 import com.LittleLanka.product_service.dto.paginated.PaginatedResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.request.*;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
+import com.LittleLanka.product_service.entity.PriceUpdate;
 import com.LittleLanka.product_service.entity.Product;
 import com.LittleLanka.product_service.entity.enums.CatagoryType;
 import com.LittleLanka.product_service.repository.PriceUpdateRepository;
@@ -129,6 +130,78 @@ public class ProductServiceIMPL implements ProductService {
 
         // Create a resource from the image file
         return new FileSystemResource(file);
+    }
+
+    @Override
+    public ProductDTO updateProduct(RequestUpdateProductDTO requestUpdateProductDTO, int productId) {
+        Optional<Product> existingProductOpt = productRepository.findById((long) productId);
+        if (existingProductOpt.isEmpty()) {
+            throw new RuntimeException("Product not found with ID: " + productId);
+        }
+
+        Product existingProduct = existingProductOpt.get();
+        MultipartFile image = requestUpdateProductDTO.getImageFile();
+        String imageUrl = existingProduct.getImageUrl(); // Keep existing image if none is provided
+
+        // Handle image update (delete old image if a new one is provided)
+        if (image != null && !image.isEmpty()) {
+            try {
+                // Delete the old image file if it exists
+                if (imageUrl != null) {
+                    Path oldImagePath = Paths.get(imageUrl);
+                    Files.deleteIfExists(oldImagePath);
+                }
+
+                // Save the new image
+                String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+                Path imagePath = Paths.get(IMAGE_UPLOAD_DIR, fileName);
+                Files.createDirectories(imagePath.getParent());
+                Files.write(imagePath, image.getBytes());
+                imageUrl = imagePath.toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Update product details only if new values are provided
+        existingProduct.setProductName(
+                requestUpdateProductDTO.getProductName() != null ? requestUpdateProductDTO.getProductName() : existingProduct.getProductName()
+        );
+        existingProduct.setProductCatagory(
+                requestUpdateProductDTO.getProductCatagory() != null ? requestUpdateProductDTO.getProductCatagory() : existingProduct.getProductCatagory()
+        );
+        existingProduct.setProductMeasuringUnitType(
+                requestUpdateProductDTO.getProductMeasuringUnitType() != null ? requestUpdateProductDTO.getProductMeasuringUnitType() : existingProduct.getProductMeasuringUnitType()
+        );
+        existingProduct.setImageUrl(imageUrl);
+        existingProduct.setProductStatus(requestUpdateProductDTO.isProductStatus());
+
+        // Save updated product details
+        Product updatedProduct = productRepository.save(existingProduct);
+
+        // Convert string date to Date object if provided, else use the current date
+        Date newDate = requestUpdateProductDTO.getDate() != null
+                ? serviceFuntions.makeDate(requestUpdateProductDTO.getDate())
+                : new Date();
+
+        // Check if a new price is provided
+        if (requestUpdateProductDTO.getPrice() != null) {
+            Double newPrice = requestUpdateProductDTO.getPrice();
+
+            // Check if a record with the same price and date already exists
+            boolean exists = priceUpdateRepository.existsByProductAndPriceAndPriceUpdateDate(updatedProduct, newPrice, newDate);
+
+            if (!exists) {
+                // If not exists, add a new price update entry
+                PriceUpdate priceUpdate = new PriceUpdate();
+                priceUpdate.setProduct(updatedProduct);
+                priceUpdate.setPrice(newPrice);
+                priceUpdate.setPriceUpdateDate(newDate);
+                priceUpdateRepository.save(priceUpdate);
+            }
+        }
+
+        return modelMapper.map(updatedProduct, ProductDTO.class);
     }
 
 

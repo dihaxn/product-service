@@ -24,4 +24,7 @@ public interface ProductService {
     List<ResponseGetAllProductsDTO> getAllProductsNormal();
 
     Resource getImageByUrl(String url);
+
+    ProductDTO updateProduct(RequestUpdateProductDTO requestUpdateProductDTO, int productId);
+
 }
