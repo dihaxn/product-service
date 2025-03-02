@@ -4,11 +4,14 @@ import com.LittleLanka.product_service.dto.ProductDTO;
 import com.LittleLanka.product_service.dto.paginated.PaginatedResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.request.*;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
+import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsWithStock;
 import com.LittleLanka.product_service.entity.PriceUpdate;
 import com.LittleLanka.product_service.entity.Product;
+import com.LittleLanka.product_service.entity.Stock;
 import com.LittleLanka.product_service.entity.enums.CatagoryType;
 import com.LittleLanka.product_service.repository.PriceUpdateRepository;
 import com.LittleLanka.product_service.repository.ProductRepository;
+import com.LittleLanka.product_service.repository.StockRepository;
 import com.LittleLanka.product_service.service.ProductService;
 import com.LittleLanka.product_service.util.functions.ServiceFuntions;
 import lombok.AllArgsConstructor;
@@ -36,6 +39,7 @@ import java.util.stream.Collectors;
 public class ProductServiceIMPL implements ProductService {
     private ProductRepository productRepository;
     private PriceUpdateRepository priceUpdateRepository;
+    private StockRepository stockRepository;
     private ModelMapper modelMapper;
     private ServiceFuntions serviceFuntions;
     private final String IMAGE_UPLOAD_DIR = "src/main/java/com/LittleLanka/product_service/assets/";
@@ -204,5 +208,21 @@ public class ProductServiceIMPL implements ProductService {
         return modelMapper.map(updatedProduct, ProductDTO.class);
     }
 
+    @Override
+    public List<ResponseGetAllProductsWithStock> getAllProductByOutlet(int outletId) {
+        List<Stock> stocks = stockRepository.findAllByOutletId((long) outletId);
+
+        return stocks.stream().map(stock -> {
+            Product product = stock.getProduct();
+            ResponseGetAllProductsWithStock dto = modelMapper.map(product, ResponseGetAllProductsWithStock.class);
+            dto.setStockQuantity(stock.getStockQuantity());
+
+            // Fetch price using the specified function
+            Double price = priceUpdateRepository.findPriceUpdateByPriceUpdateDateAndProductId(new Date(), product.getProductId());
+            dto.setPrice(price != null ? price : 0.0);
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
 
 }

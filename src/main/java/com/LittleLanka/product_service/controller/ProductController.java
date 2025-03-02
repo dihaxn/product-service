@@ -5,6 +5,7 @@ import com.LittleLanka.product_service.dto.paginated.PaginatedResponseGetAllProd
 import com.LittleLanka.product_service.dto.request.RequestSaveProductDto;
 import com.LittleLanka.product_service.dto.request.RequestUpdateProductDTO;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
+import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsWithStock;
 import com.LittleLanka.product_service.entity.enums.CatagoryType;
 import com.LittleLanka.product_service.service.ProductService;
 import com.LittleLanka.product_service.util.StandardResponse;
@@ -43,6 +44,13 @@ public class ProductController {
         ProductDTO updatedProduct = productService.updateProduct(requestUpdateProductDTO, productId);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(), "Successfully saved the product",updatedProduct),
                 HttpStatus.CREATED);
+    }
+
+    @GetMapping(path = "get-by-outlet", params = "id")
+    public ResponseEntity<StandardResponse> getAllProductByOutlet(@RequestParam(value = "id") int outletId) {
+        List<ResponseGetAllProductsWithStock> products = productService.getAllProductByOutlet(outletId);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", products),
+                HttpStatus.OK);
     }
 
     // get all products

@@ -4,6 +4,7 @@ import com.LittleLanka.product_service.dto.ProductDTO;
 import com.LittleLanka.product_service.dto.paginated.PaginatedResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.request.*;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
+import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsWithStock;
 import com.LittleLanka.product_service.entity.enums.CatagoryType;
 import org.springframework.core.io.Resource;
 
@@ -26,5 +27,7 @@ public interface ProductService {
     Resource getImageByUrl(String url);
 
     ProductDTO updateProduct(RequestUpdateProductDTO requestUpdateProductDTO, int productId);
+
+    List<ResponseGetAllProductsWithStock> getAllProductByOutlet(int outletId);
 
 }
