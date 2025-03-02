@@ -6,6 +6,7 @@ import com.LittleLanka.product_service.dto.request.RequestSaveProductDto;
 import com.LittleLanka.product_service.dto.request.RequestUpdateProductDTO;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsWithStock;
+import com.LittleLanka.product_service.dto.response.ResponseGetProductDTO;
 import com.LittleLanka.product_service.entity.enums.CatagoryType;
 import com.LittleLanka.product_service.service.ProductService;
 import com.LittleLanka.product_service.util.StandardResponse;
@@ -50,6 +51,13 @@ public class ProductController {
     public ResponseEntity<StandardResponse> getAllProductByOutlet(@RequestParam(value = "id") int outletId) {
         List<ResponseGetAllProductsWithStock> products = productService.getAllProductByOutlet(outletId);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", products),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("/get-by-id/{id}")
+    public ResponseEntity<StandardResponse> getProductById(@PathVariable(value = "id") int productId) {
+        ResponseGetProductDTO product = productService.getProductById(productId);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch product", product),
                 HttpStatus.OK);
     }
 

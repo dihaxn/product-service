@@ -5,6 +5,7 @@ import com.LittleLanka.product_service.dto.paginated.PaginatedResponseGetAllProd
 import com.LittleLanka.product_service.dto.request.*;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsWithStock;
+import com.LittleLanka.product_service.dto.response.ResponseGetProductDTO;
 import com.LittleLanka.product_service.entity.PriceUpdate;
 import com.LittleLanka.product_service.entity.Product;
 import com.LittleLanka.product_service.entity.Stock;
@@ -223,6 +224,24 @@ public class ProductServiceIMPL implements ProductService {
 
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public ResponseGetProductDTO getProductById(int productId) {
+        Product product = productRepository.findById((long) productId).get();
+        Double todayPrice = priceUpdateRepository.findPriceUpdateByPriceUpdateDateAndProductId(new Date(), product.getProductId());
+        // Get the latest price update
+        PriceUpdate latestPriceUpdate = priceUpdateRepository.findTopByProductOrderByPriceUpdateDateDesc(product);
+        Double lastUpdatedPrice = latestPriceUpdate != null ? latestPriceUpdate.getPrice() : null;
+        String lastUpdatedDate = latestPriceUpdate != null ? latestPriceUpdate.getPriceUpdateDate().toString() : null;
+
+        ResponseGetProductDTO responseDTO = modelMapper.map(product, ResponseGetProductDTO.class);
+        responseDTO.setTodayPrice(todayPrice);
+        responseDTO.setLastUpdatedPrice(lastUpdatedPrice);
+        responseDTO.setLastUpdatedDate(lastUpdatedDate);
+
+        return responseDTO;
+
     }
 
 }
