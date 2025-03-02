@@ -16,4 +16,6 @@ public class ResponseGetAllProductsDTO {
     private MeasuringUnitType productMeasuringUnitType = MeasuringUnitType.NUMBER;//NUMBER, KG, PACKET
     private String imageUrl;
     private Double price;
+    private boolean productStatus;
+
 }

@@ -38,9 +38,9 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class ProductServiceIMPL implements ProductService {
+    private final StockRepository stockRepository;
     private ProductRepository productRepository;
     private PriceUpdateRepository priceUpdateRepository;
-    private StockRepository stockRepository;
     private ModelMapper modelMapper;
     private ServiceFuntions serviceFuntions;
     private final String IMAGE_UPLOAD_DIR = "src/main/java/com/LittleLanka/product_service/assets/";
@@ -50,27 +50,37 @@ public class ProductServiceIMPL implements ProductService {
     public ProductDTO saveProduct(RequestSaveProductDto requestSaveProductDTO) {
         MultipartFile image = requestSaveProductDTO.getImageFile();
         String imageUrl = null;
-        if(image != null && !image.isEmpty()) {
+
+        if (image != null && !image.isEmpty()) {
             try {
                 String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
                 Path imagePath = Paths.get(IMAGE_UPLOAD_DIR, fileName);
                 Files.createDirectories(imagePath.getParent());
                 Files.write(imagePath, image.getBytes());
                 imageUrl = imagePath.toString();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
         Product product = modelMapper.map(requestSaveProductDTO, Product.class);
         product.setImageUrl(imageUrl);
-        if(!productRepository.existsByProductCatagoryAndProductName(requestSaveProductDTO.getProductCatagory()
-                , requestSaveProductDTO.getProductName()))
-        {
-            productRepository.save(product);
+
+        if (!productRepository.existsByProductCatagoryAndProductName(requestSaveProductDTO.getProductCatagory(),
+                requestSaveProductDTO.getProductName())) {
+            product = productRepository.save(product); // Ensure product is saved and has an ID
+
+            // Save price update entry
+            PriceUpdate priceUpdate = new PriceUpdate();
+            priceUpdate.setProduct(product);
+            priceUpdate.setPrice(requestSaveProductDTO.getPrice());
+            priceUpdate.setPriceUpdateDate(new Date());
+
+            priceUpdateRepository.save(priceUpdate); // Save price update
+
             return modelMapper.map(product, ProductDTO.class);
         }
         return null;
-
     }
 
     @Override
@@ -244,4 +254,30 @@ public class ProductServiceIMPL implements ProductService {
 
     }
 
+    @Override
+    public List<ResponseGetAllProductsWithStock> getAllProductsForOutlet(int outletId) {
+        List<Product> allProducts = productRepository.findAll(); // Fetch all products
+        List<Stock> stocksForOutlet = stockRepository.findAllByOutletId((long) outletId);
+
+        // Convert stocks to a map for quick lookup
+        Map<Long, Double> stockMap = stocksForOutlet.stream()
+                .collect(Collectors.toMap(stock -> stock.getProduct().getProductId(), Stock::getStockQuantity));
+
+        return allProducts.stream().map(product -> {
+            ResponseGetAllProductsWithStock dto = modelMapper.map(product, ResponseGetAllProductsWithStock.class);
+
+            // Set stock quantity: if not found in map or 0, set to 0
+            dto.setStockQuantity(stockMap.getOrDefault(product.getProductId(), 0.0));
+
+            // Fetch price using the specified function
+            Double price = priceUpdateRepository.findPriceUpdateByPriceUpdateDateAndProductId(new Date(), product.getProductId());
+            dto.setPrice(price != null ? price : 0.0);
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+
+
 }
+

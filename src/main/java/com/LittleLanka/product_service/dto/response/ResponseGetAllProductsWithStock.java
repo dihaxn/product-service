@@ -17,4 +17,6 @@ public class ResponseGetAllProductsWithStock {
     private String imageUrl;
     private Double price;
     private double stockQuantity;
+    private boolean productStatus;
+
 }

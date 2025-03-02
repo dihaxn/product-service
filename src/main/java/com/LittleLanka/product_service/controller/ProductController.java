@@ -54,10 +54,10 @@ public class ProductController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/get-by-id/{id}")
-    public ResponseEntity<StandardResponse> getProductById(@PathVariable(value = "id") int productId) {
-        ResponseGetProductDTO product = productService.getProductById(productId);
-        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch product", product),
+    @GetMapping(path = "get-all-for-outlet", params = "id")
+    public ResponseEntity<StandardResponse> getAllProductsForOutlet(@RequestParam(value = "id") int outletId) {
+        List<ResponseGetAllProductsWithStock> products = productService.getAllProductsForOutlet(outletId);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", products),
                 HttpStatus.OK);
     }
 
@@ -66,6 +66,14 @@ public class ProductController {
     public ResponseEntity<StandardResponse> getAllProductsNormal() {
         List<ResponseGetAllProductsDTO> allProducts = productService.getAllProductsNormal();
         return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch all products", allProducts),
+                HttpStatus.OK);
+    }
+
+    // get all products
+    @GetMapping("/get-by-id/{id}")
+    public ResponseEntity<StandardResponse> getProductById(@PathVariable(value = "id") int productId) {
+        ResponseGetProductDTO product = productService.getProductById(productId);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetch product", product),
                 HttpStatus.OK);
     }
 

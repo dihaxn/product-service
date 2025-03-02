@@ -15,5 +15,6 @@ public class RequestSaveProductDto {
     private CatagoryType productCatagory;
     private MeasuringUnitType productMeasuringUnitType = MeasuringUnitType.NUMBER;
     private MultipartFile ImageFile;
+    private Double price;
 
 }

@@ -1,6 +1,7 @@
 package com.LittleLanka.product_service.service.impl;
 
 import com.LittleLanka.product_service.dto.StockDTO;
+import com.LittleLanka.product_service.dto.request.RequestInitializeStockDto;
 import com.LittleLanka.product_service.dto.request.RequestProductListDTO;
 import com.LittleLanka.product_service.dto.request.RequestStockUpdateDto;
 import com.LittleLanka.product_service.dto.request.RequestUpdateStockDTO;
@@ -10,6 +11,8 @@ import com.LittleLanka.product_service.dto.response.ResponseStockDto;
 import com.LittleLanka.product_service.dto.response.ResponseUpdateStockDTO;
 import com.LittleLanka.product_service.entity.Product;
 import com.LittleLanka.product_service.entity.Stock;
+import com.LittleLanka.product_service.exception.InvalidStockException;
+import com.LittleLanka.product_service.exception.ProductNotFoundException;
 import com.LittleLanka.product_service.repository.PriceUpdateRepository;
 import com.LittleLanka.product_service.repository.ProductRepository;
 import com.LittleLanka.product_service.repository.StockRepository;
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -38,17 +42,24 @@ public class StockServiceIMPL implements StockService {
     private PriceUpdateRepository priceUpdateRepository;
 
     @Override
-    public StockDTO initializeStock(StockDTO stockDTO) {
-        if(stockRepository.existsById(stockDTO.getProductId())){
-            Boolean isProductAlreadyExists=stockRepository.existsByOutletIdAndProduct(stockDTO.getOutletId(),
-                    productRepository.getReferenceById(stockDTO.getProductId()));
-            if(!isProductAlreadyExists){
-                Stock stock=modelMapper.map(stockDTO, Stock.class);
-                Stock stock1=stockRepository.save(stock);
-                return modelMapper.map(stock1, StockDTO.class);
-            }
+    public StockDTO initializeStock(RequestInitializeStockDto requestInitializeStockDto) {
+        // Validate if the product exists
+        Product product = productRepository.findById(requestInitializeStockDto.getProductId())
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + requestInitializeStockDto.getProductId()));
+
+        // Check if a stock record exists for the given outletId and productId
+        if (stockRepository.findByOutletIdAndProduct(requestInitializeStockDto.getOutletId(), product).isPresent()) {
+            throw new InvalidStockException("Stock already exists for the product at the given outlet");
         }
-        return null;
+
+        // Create a new stock record
+        Stock newStock = new Stock();
+        newStock.setOutletId(requestInitializeStockDto.getOutletId());
+        newStock.setStockQuantity(requestInitializeStockDto.getStockQuantity());
+        newStock.setProduct(product);
+
+        Stock savedStock = stockRepository.save(newStock);
+        return modelMapper.map(savedStock, StockDTO.class);
     }
 
     @Override
@@ -77,22 +88,30 @@ public class StockServiceIMPL implements StockService {
 
     @Override
     public ResponseUpdateStockDTO updateStockByOutletIdAndProductList(RequestUpdateStockDTO requestUpdateStockDTO) {
-        Long outletId=requestUpdateStockDTO.getOutletId();
+        Long outletId = requestUpdateStockDTO.getOutletId();
         List<RequestProductListDTO> productList = requestUpdateStockDTO.getProductList();
         boolean isIncrease = requestUpdateStockDTO.isIncrease();
-        List<RequestProductListDTO> updatedProductList=new ArrayList<>();
+        List<RequestProductListDTO> updatedProductList = new ArrayList<>();
 
         for (RequestProductListDTO product : productList) {
-            Stock stock = stockRepository.findByOutletIdAndProduct(outletId, productRepository.getReferenceById(product.getProductId()));
+            Optional<Stock> stockOpt = stockRepository.findByOutletIdAndProduct(outletId, productRepository.getReferenceById(product.getProductId()));
+
+            if (stockOpt.isEmpty()) {
+                throw new RuntimeException("Stock not found for productId: " + product.getProductId() + " and outletId: " + outletId);
+            }
+
+            Stock stock = stockOpt.get(); // Unwrap the Optional
+
             double updateStockQuantity;
-            if(isIncrease){
-                updateStockQuantity=stock.getStockQuantity()+product.getStockQuantity();
-            }else{
-                if(stock.getStockQuantity()<product.getStockQuantity()){
+            if (isIncrease) {
+                updateStockQuantity = stock.getStockQuantity() + product.getStockQuantity();
+            } else {
+                if (stock.getStockQuantity() < product.getStockQuantity()) {
                     throw new RuntimeException("Insufficient stock");
                 }
-                updateStockQuantity=stock.getStockQuantity()-product.getStockQuantity();
+                updateStockQuantity = stock.getStockQuantity() - product.getStockQuantity();
             }
+
             stock.setStockQuantity(updateStockQuantity);
             stockRepository.save(stock);
             updatedProductList.add(new RequestProductListDTO(product.getProductId(), updateStockQuantity));
@@ -103,6 +122,7 @@ public class StockServiceIMPL implements StockService {
         responseUpdateStockDTO.setProductList(updatedProductList);
         return responseUpdateStockDTO;
     }
+
 
     @Override
     public List<ResponseInventryDto> getAllStockFullInfoOutlet(Long outletId) {
@@ -120,8 +140,8 @@ public class StockServiceIMPL implements StockService {
                     .stockQuantity(stock.getStockQuantity())
                     .productName(stock.getProduct().getProductName())
                     .stockQuantity(stock.getStockQuantity())
-                            .imageUrl(product.getImageUrl())
-                            .price(price)
+                    .imageUrl(product.getImageUrl())
+                    .price(price)
                     .build());
         }
         return List.of();
