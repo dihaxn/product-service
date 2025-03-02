@@ -5,6 +5,7 @@ import com.LittleLanka.product_service.dto.paginated.PaginatedResponseGetAllProd
 import com.LittleLanka.product_service.dto.request.*;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsWithStock;
+import com.LittleLanka.product_service.dto.response.ResponseGetProductDTO;
 import com.LittleLanka.product_service.entity.enums.CatagoryType;
 import org.springframework.core.io.Resource;
 
@@ -30,4 +31,5 @@ public interface ProductService {
 
     List<ResponseGetAllProductsWithStock> getAllProductByOutlet(int outletId);
 
+    ResponseGetProductDTO getProductById(int productId);
 }
