@@ -32,4 +32,6 @@ public interface ProductService {
     List<ResponseGetAllProductsWithStock> getAllProductByOutlet(int outletId);
 
     ResponseGetProductDTO getProductById(int productId);
+
+    List<ResponseGetAllProductsWithStock> getAllProductsForOutlet(int outletId);
 }

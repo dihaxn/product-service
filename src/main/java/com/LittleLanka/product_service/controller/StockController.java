@@ -1,6 +1,7 @@
 package com.LittleLanka.product_service.controller;
 
 import com.LittleLanka.product_service.dto.StockDTO;
+import com.LittleLanka.product_service.dto.request.RequestInitializeStockDto;
 import com.LittleLanka.product_service.dto.request.RequestStockUpdateDto;
 import com.LittleLanka.product_service.dto.request.RequestUpdateStockDTO;
 import com.LittleLanka.product_service.dto.response.ResponseInventryDto;
@@ -29,8 +30,8 @@ public class StockController {
 
     // initialize a stock
     @PostMapping
-    public ResponseEntity<StandardResponse> initializeStock(@RequestBody StockDTO stockDTO) {
-        StockDTO stockDTO1=stockService.initializeStock(stockDTO);
+    public ResponseEntity<StandardResponse> initializeStock(@RequestBody RequestInitializeStockDto requestInitializeStockDto) {
+        StockDTO stockDTO1=stockService.initializeStock(requestInitializeStockDto);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.CREATED.value(),
                 "Successfully initialized the stock",stockDTO1),
                 HttpStatus.CREATED);
