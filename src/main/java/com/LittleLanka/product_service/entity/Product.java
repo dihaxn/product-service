@@ -26,7 +26,7 @@ public class Product {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "product_catagory")
-    private CatagoryType productCatagory;
+    private CatagoryType productCatagory; // SHORTIES, BISCUITS, CAKES, BREADS, OTHER
 
     @Column(name = "product_status", columnDefinition = "TINYINT default 0") // 1=active, 0=inactive
     private boolean productStatus;

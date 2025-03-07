@@ -3,6 +3,7 @@ package com.LittleLanka.product_service.controller;
 import com.LittleLanka.product_service.dto.PriceUpdateDTO;
 import com.LittleLanka.product_service.dto.request.RequestDateAndPriceListDTO;
 import com.LittleLanka.product_service.dto.request.RequestPriceUpdateDto;
+import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.response.ResponsePriceListDTO;
 import com.LittleLanka.product_service.service.PriceService;
 import com.LittleLanka.product_service.util.StandardResponse;
@@ -53,7 +54,7 @@ public class PriceController {
     @PostMapping("/list-by-product-ids")
     public ResponseEntity<StandardResponse> getPriceListByDateAndProductIdList(
             @RequestBody RequestDateAndPriceListDTO requestDateAndPriceListDTO) {
-        List<ResponsePriceListDTO> priceListDTOS = priceService.getPriceListByDateAndProductIdList(requestDateAndPriceListDTO);
+        List<ResponseGetAllProductsDTO> priceListDTOS = priceService.getPriceListByDateAndProductIdList(requestDateAndPriceListDTO);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully got the price list",
                 priceListDTOS), HttpStatus.OK);
     }

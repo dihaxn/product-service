@@ -4,6 +4,7 @@ import com.LittleLanka.product_service.dto.PriceUpdateDTO;
 import com.LittleLanka.product_service.dto.queryInterfaces.PriceListInterface;
 import com.LittleLanka.product_service.dto.request.RequestDateAndPriceListDTO;
 import com.LittleLanka.product_service.dto.request.RequestPriceUpdateDto;
+import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.response.ResponsePriceListDTO;
 import com.LittleLanka.product_service.entity.PriceUpdate;
 import com.LittleLanka.product_service.entity.Product;
@@ -63,17 +64,25 @@ public class PriceServiceIMPL implements PriceService {
     }
 
     @Override
-    public List<ResponsePriceListDTO> getPriceListByDateAndProductIdList(RequestDateAndPriceListDTO requestDateAndPriceListDTO) {
+    public List<ResponseGetAllProductsDTO> getPriceListByDateAndProductIdList(RequestDateAndPriceListDTO requestDateAndPriceListDTO) {
         String date = requestDateAndPriceListDTO.getDate();
-        List<ResponsePriceListDTO> priceListByDate = getPriceListByDate(date); // Fetch all prices for the date
-        // Filter the prices based on the product IDs provided in the request
+        Date dateObj = serviceFuntions.makeDate(date);  // Convert string date to Date object
+
         List<Long> productIds = requestDateAndPriceListDTO.getProductIds();
-        List<ResponsePriceListDTO> filteredPriceList = new ArrayList<>();
-        for (ResponsePriceListDTO priceListDTO : priceListByDate) {
-            if (productIds.contains(priceListDTO.getProductId())) {
-                filteredPriceList.add(priceListDTO);
-            }
+        List<Product> products = productRepository.findAllById(productIds); // Fetch products from Product table
+
+        List<ResponseGetAllProductsDTO> responseList = new ArrayList<>();
+
+        for (Product product : products) {
+            Double price = priceUpdateRepository.findPriceUpdateByPriceUpdateDateAndProductId(dateObj, product.getProductId());
+
+            // Map Product to ResponseGetAllProductsDTO
+            ResponseGetAllProductsDTO responseDTO = modelMapper.map(product, ResponseGetAllProductsDTO.class);
+            responseDTO.setPrice(price); // Set price from price update table
+
+            responseList.add(responseDTO);
         }
-        return filteredPriceList;
+
+        return responseList;
     }
 }
