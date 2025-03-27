@@ -52,7 +52,7 @@ public class PriceController {
 
     // Get price list by date and product ID list
     @PostMapping("/list-by-product-ids")
-    public ResponseEntity<StandardResponse> getPriceListByDateAndProductIdList(
+    public ResponseEntity<StandardResponse<List<ResponseGetAllProductsDTO>>> getPriceListByDateAndProductIdList(
             @RequestBody RequestDateAndPriceListDTO requestDateAndPriceListDTO) {
         List<ResponseGetAllProductsDTO> priceListDTOS = priceService.getPriceListByDateAndProductIdList(requestDateAndPriceListDTO);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully got the price list",
