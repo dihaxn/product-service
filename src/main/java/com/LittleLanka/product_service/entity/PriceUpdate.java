@@ -29,4 +29,7 @@ public class PriceUpdate {
     @Column(name = "price")
     private Double price;
 
+    @Column(name = "price_update_status", columnDefinition = "TINYINT default 0") // 1=active, 0=inactive
+    private boolean priceUpdateStatus;
+
 }

@@ -41,6 +41,9 @@ public class PriceServiceIMPL implements PriceService {
     public List<ResponsePriceListDTO> getPriceListByDate(String date) {
         Date dateObj = serviceFuntions.makeDate(date);
         List<PriceListInterface> priceListDTOS = priceUpdateRepository.findProductIdAndPriceByDateEquals(dateObj);
+        if (priceListDTOS.isEmpty()) {
+            throw new RuntimeException("Not found price list");
+        }
         List<ResponsePriceListDTO> responsePriceListDTOS = new ArrayList<>();
         for (PriceListInterface priceListDTO : priceListDTOS) {
             ResponsePriceListDTO responsePriceListDTO = new ResponsePriceListDTO(
@@ -84,5 +87,14 @@ public class PriceServiceIMPL implements PriceService {
         }
 
         return responseList;
+    }
+
+    @Override
+    public PriceUpdateDTO updatePriceUpdateStatus(Long id, double price, String date, boolean status) {
+        Date dateObj = serviceFuntions.makeDate(date);
+        PriceUpdate priceUpdate = priceUpdateRepository.findPriceUpdateByProduct_ProductIdAndPriceAndPriceUpdateDateEquals(id, price, dateObj);
+        priceUpdate.setPriceUpdateStatus(status);
+        PriceUpdate priceUpdateOut=priceUpdateRepository.save(priceUpdate);
+        return modelMapper.map(priceUpdateOut, PriceUpdateDTO.class);
     }
 }

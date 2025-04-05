@@ -16,4 +16,6 @@ public interface PriceService {
     List<ResponsePriceListDTO> getPriceListByDate(String date);
 
     List<ResponseGetAllProductsDTO> getPriceListByDateAndProductIdList(RequestDateAndPriceListDTO requestDateAndPriceListDTO);
+
+    PriceUpdateDTO updatePriceUpdateStatus(Long id, double price, String date, boolean status);
 }

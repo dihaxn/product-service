@@ -58,4 +58,16 @@ public class PriceController {
         return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully got the price list",
                 priceListDTOS), HttpStatus.OK);
     }
+
+    @PutMapping("status/{productId}/{price}/{date}/{status}")
+    public ResponseEntity<StandardResponse> updatePriceUpdateStatus(
+            @PathVariable(value = "productId") Long id,
+            @PathVariable(value = "price") double price,
+            @PathVariable(value = "date") String date,
+            @PathVariable(value = "status") boolean status
+    ){
+        PriceUpdateDTO priceUpdateDTO = priceService.updatePriceUpdateStatus(id, price, date, status);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully updated stauts", priceUpdateDTO),
+                HttpStatus.CREATED);
+    }
 }
