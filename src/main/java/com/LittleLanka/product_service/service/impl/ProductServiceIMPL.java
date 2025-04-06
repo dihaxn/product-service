@@ -215,7 +215,7 @@ public class ProductServiceIMPL implements ProductService {
                 priceUpdate.setProduct(updatedProduct);
                 priceUpdate.setPrice(newPrice);
                 priceUpdate.setPriceUpdateDate(newDate);
-                priceUpdate.setPriceUpdateStatus(updatedProduct.isProductStatus()); // Sync with product status
+                priceUpdate.setPriceUpdateStatus(false); // Sync with product status
                 priceUpdateRepository.save(priceUpdate);
             }
         }
@@ -281,6 +281,5 @@ public class ProductServiceIMPL implements ProductService {
             return dto;
         }).collect(Collectors.toList());
     }
-
 }
 
