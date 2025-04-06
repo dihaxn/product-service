@@ -30,15 +30,9 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class StockServiceIMPL implements StockService {
-
-
     private ModelMapper modelMapper;
-
     private StockRepository stockRepository;
-
-
     private ProductRepository productRepository;
-
     private PriceUpdateRepository priceUpdateRepository;
 
     @Override
@@ -93,35 +87,43 @@ public class StockServiceIMPL implements StockService {
         boolean isIncrease = requestUpdateStockDTO.isIncrease();
         List<RequestProductListDTO> updatedProductList = new ArrayList<>();
 
-        for (RequestProductListDTO product : productList) {
-            Optional<Stock> stockOpt = stockRepository.findByOutletIdAndProduct(outletId, productRepository.getReferenceById(product.getProductId()));
+        for (RequestProductListDTO productDTO : productList) {
+            Product product = productRepository.getReferenceById(productDTO.getProductId());
+            Optional<Stock> stockOpt = stockRepository.findByOutletIdAndProduct(outletId, product);
 
-            if (stockOpt.isEmpty()) {
-                throw new RuntimeException("Stock not found for productId: " + product.getProductId() + " and outletId: " + outletId);
-            }
+            Stock stock;
+            double newStockQuantity;
 
-            Stock stock = stockOpt.get(); // Unwrap the Optional
-
-            double updateStockQuantity;
-            if (isIncrease) {
-                updateStockQuantity = stock.getStockQuantity() + product.getStockQuantity();
-            } else {
-                if (stock.getStockQuantity() < product.getStockQuantity()) {
-                    throw new RuntimeException("Insufficient stock");
+            if (stockOpt.isPresent()) {
+                stock = stockOpt.get();
+                if (isIncrease) {
+                    newStockQuantity = stock.getStockQuantity() + productDTO.getStockQuantity();
+                } else {
+                    if (stock.getStockQuantity() < productDTO.getStockQuantity()) {
+                        throw new RuntimeException("Insufficient stock for productId: " + productDTO.getProductId());
+                    }
+                    newStockQuantity = stock.getStockQuantity() - productDTO.getStockQuantity();
                 }
-                updateStockQuantity = stock.getStockQuantity() - product.getStockQuantity();
+                stock.setStockQuantity(newStockQuantity);
+            } else {
+                // Create new stock if not found
+                if (!isIncrease) {
+                    throw new RuntimeException("Cannot decrease stock for non-existing stock entry for productId: " + productDTO.getProductId());
+                }
+                stock = new Stock();
+                stock.setOutletId(outletId);
+                stock.setProduct(product);
+                newStockQuantity = productDTO.getStockQuantity();
+                stock.setStockQuantity(newStockQuantity);
             }
 
-            stock.setStockQuantity(updateStockQuantity);
             stockRepository.save(stock);
-            updatedProductList.add(new RequestProductListDTO(product.getProductId(), updateStockQuantity));
+            updatedProductList.add(new RequestProductListDTO(productDTO.getProductId(), newStockQuantity));
         }
 
-        ResponseUpdateStockDTO responseUpdateStockDTO = new ResponseUpdateStockDTO();
-        responseUpdateStockDTO.setOutletId(outletId);
-        responseUpdateStockDTO.setProductList(updatedProductList);
-        return responseUpdateStockDTO;
+        return new ResponseUpdateStockDTO(outletId, updatedProductList);
     }
+
 
 
     @Override
@@ -146,5 +148,4 @@ public class StockServiceIMPL implements StockService {
         }
         return List.of();
     }
-
 }
