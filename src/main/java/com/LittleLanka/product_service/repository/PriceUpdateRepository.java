@@ -27,5 +27,7 @@ public interface PriceUpdateRepository extends JpaRepository<PriceUpdate, Long> 
 
     PriceUpdate findPriceUpdateByProduct_ProductIdAndPriceAndPriceUpdateDateEquals(Long id, double price, Date dateObj);
 
+    List<PriceUpdate> findAllByPriceUpdateStatusEquals(boolean b);
+
 }
 

@@ -5,6 +5,7 @@ import com.LittleLanka.product_service.dto.request.RequestDateAndPriceListDTO;
 import com.LittleLanka.product_service.dto.request.RequestPriceUpdateDto;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.response.ResponsePriceListDTO;
+import com.LittleLanka.product_service.dto.response.ResponsePriceUpdateDTO;
 import com.LittleLanka.product_service.service.PriceService;
 import com.LittleLanka.product_service.util.StandardResponse;
 import lombok.AllArgsConstructor;
@@ -68,6 +69,24 @@ public class PriceController {
     ){
         PriceUpdateDTO priceUpdateDTO = priceService.updatePriceUpdateStatus(id, price, date, status);
         return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully updated stauts", priceUpdateDTO),
+                HttpStatus.CREATED);
+    }
+
+    @GetMapping("status")
+    public ResponseEntity<StandardResponse> getAllPriceByStatus(){
+        List<ResponsePriceUpdateDTO> priceUpdateDTO = priceService.getAllPriceByStatus(false);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully fetched priceUpdates", priceUpdateDTO),
+                HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("status/{productId}/{price}/{date}")
+    public ResponseEntity<StandardResponse> deletePriceUpdateStatus(
+            @PathVariable(value = "productId") Long id,
+            @PathVariable(value = "price") double price,
+            @PathVariable(value = "date") String date
+    ){
+        Long priceUpdateStatus = priceService.deletePriceUpdateStatus(id, price, date);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Successfully deleted stauts", priceUpdateStatus),
                 HttpStatus.CREATED);
     }
 }

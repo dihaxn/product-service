@@ -281,5 +281,28 @@ public class ProductServiceIMPL implements ProductService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public ProductDTO updateProductStatusById(Long productId) {
+        // Fetch product by ID or throw exception
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+
+        // Update product status
+        product.setProductStatus(true);
+
+        // Update price update statuses
+        if (product.getProductUpdates() != null) {
+            for (PriceUpdate priceUpdate : product.getProductUpdates()) {
+                priceUpdate.setPriceUpdateStatus(true);
+            }
+        }
+
+        // Save changes
+        productRepository.save(product);
+
+        // Map to DTO
+        return modelMapper.map(product, ProductDTO.class);
+    }
 }
 
