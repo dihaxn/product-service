@@ -131,4 +131,11 @@ public class ProductController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageResource);
     }
 
+    @PutMapping("status-by-id/{id}")
+    public ResponseEntity<StandardResponse> updateProductStatusById(@PathVariable(value = "id") Long productId){
+        ProductDTO productDTO = productService.updateProductStatusById(productId);
+        return new ResponseEntity<>(new StandardResponse(HttpStatus.OK.value(), "Product status updated successfully", productDTO),
+                HttpStatus.OK);
+    }
+
 }

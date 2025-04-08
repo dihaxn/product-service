@@ -34,4 +34,7 @@ public interface ProductService {
     ResponseGetProductDTO getProductById(int productId);
 
     List<ResponseGetAllProductsWithStock> getAllProductsForOutlet(int outletId);
+
+    ProductDTO updateProductStatusById(Long productId);
+
 }

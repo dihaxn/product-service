@@ -6,6 +6,7 @@ import com.LittleLanka.product_service.dto.request.RequestDateAndPriceListDTO;
 import com.LittleLanka.product_service.dto.request.RequestPriceUpdateDto;
 import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
 import com.LittleLanka.product_service.dto.response.ResponsePriceListDTO;
+import com.LittleLanka.product_service.dto.response.ResponsePriceUpdateDTO;
 import com.LittleLanka.product_service.entity.PriceUpdate;
 import com.LittleLanka.product_service.entity.Product;
 import com.LittleLanka.product_service.repository.PriceUpdateRepository;
@@ -21,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -96,5 +98,34 @@ public class PriceServiceIMPL implements PriceService {
         priceUpdate.setPriceUpdateStatus(status);
         PriceUpdate priceUpdateOut=priceUpdateRepository.save(priceUpdate);
         return modelMapper.map(priceUpdateOut, PriceUpdateDTO.class);
+    }
+
+    @Override
+    public List<ResponsePriceUpdateDTO> getAllPriceByStatus(boolean b) {
+        List<PriceUpdate> priceUpdates = priceUpdateRepository.findAllByPriceUpdateStatusEquals(b);
+
+        return priceUpdates.stream()
+                .filter(priceUpdate -> priceUpdate.getProduct().isProductStatus()) // Filter active products
+                .map(priceUpdate -> {
+                    ResponsePriceUpdateDTO dto = modelMapper.map(priceUpdate, ResponsePriceUpdateDTO.class);
+                    dto.setProductId(priceUpdate.getProduct().getProductId());
+                    dto.setProductName(priceUpdate.getProduct().getProductName());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Long deletePriceUpdateStatus(Long productId, double price, String date) {
+        Date dateObj = serviceFuntions.makeDate(date);
+
+        // Find the PriceUpdate entity using a custom query or method
+        PriceUpdate priceUpdate = priceUpdateRepository.findPriceUpdateByProduct_ProductIdAndPriceAndPriceUpdateDateEquals(productId, price, dateObj);
+
+        // Permanently delete the entity
+        priceUpdateRepository.delete(priceUpdate);
+
+        // Return a DTO indicating successful deletion (optional, as deletion is already done)
+        return priceUpdate.getPriceUpdateId();
     }
 }
