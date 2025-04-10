@@ -1,20 +1,21 @@
-package com.LittleLanka.product_service.dto.request;
+package com.LittleLanka.product_service.dto.response;
 
 import com.LittleLanka.product_service.entity.enums.CatagoryType;
 import com.LittleLanka.product_service.entity.enums.MeasuringUnitType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestSaveProductDto {
+public class ResponseGetProductDTO {
     private String productName;
     private CatagoryType productCatagory;
-    private MeasuringUnitType productMeasuringUnitType = MeasuringUnitType.NUMBER;
-    private MultipartFile ImageFile;
-    private Double price;
-
+    private MeasuringUnitType productMeasuringUnitType;
+    private String imageUrl;
+    private Double todayPrice;
+    private boolean productStatus;
+    private Double lastUpdatedPrice;
+    private String lastUpdatedDate;
 }

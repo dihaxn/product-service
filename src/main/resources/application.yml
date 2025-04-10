@@ -2,13 +2,15 @@ spring:
   application:
     name: PRODUCT-SERVICE
   datasource:
-    url : jdbc:mysql://productdb.crmk6gmiy488.eu-north-1.rds.amazonaws.com:3306/ProductDb?createDatabaseIfNotExist=true
-    username : root
-    password : productDbpwd
+    url : jdbc:mysql://35.222.69.207:3306/ProductDb?createDatabaseIfNotExist=true
+    username : springuser
+    password : springuserpwd
   jpa :
     hibernate :
       ddl-auto : update
 server:
   port: 8080
+
+#jdbc:mysql://user-service-database.crmk6gmiy488.eu-north-1.rds.amazonaws.com:3306/UserDb?createDatabaseIfNotExist=true
 
 

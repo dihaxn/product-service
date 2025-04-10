@@ -1,20 +1,22 @@
-package com.LittleLanka.product_service.dto;
+package com.LittleLanka.product_service.dto.request;
 
 import com.LittleLanka.product_service.entity.enums.CatagoryType;
 import com.LittleLanka.product_service.entity.enums.MeasuringUnitType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ProductDTO {
-    private Long productId;
+public class RequestUpdateProductDTO {
     private String productName;
-    private CatagoryType productCatagory;//SHORTIES, SWEET, ITEMS, CAKES, BREADS, SNACKS , OTHER
+    private CatagoryType productCatagory;
+    private MeasuringUnitType productMeasuringUnitType;
+    private MultipartFile ImageFile;
+    private Double price;
     private boolean productStatus;
-    private MeasuringUnitType productMeasuringUnitType = MeasuringUnitType.NUMBER;//NUMBER, KG, PACKET
-    private String imageUrl;
+    private String date;
 
 }

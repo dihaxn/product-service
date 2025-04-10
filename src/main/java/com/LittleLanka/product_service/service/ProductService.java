@@ -1,26 +1,40 @@
 package com.LittleLanka.product_service.service;
 
-import com.LittleLanka.product_service.dto.PriceUpdateDTO;
 import com.LittleLanka.product_service.dto.ProductDTO;
-import com.LittleLanka.product_service.dto.StockDTO;
-import com.LittleLanka.product_service.dto.request.RequestInitializeStockDto;
-import com.LittleLanka.product_service.dto.request.RequestPriceUpdateDto;
-import com.LittleLanka.product_service.dto.request.RequestSaveProductDto;
-import com.LittleLanka.product_service.dto.request.RequestStockUpdateDto;
-import com.LittleLanka.product_service.dto.response.ResponsePriceListDTO;
+import com.LittleLanka.product_service.dto.paginated.PaginatedResponseGetAllProductsDTO;
+import com.LittleLanka.product_service.dto.request.*;
+import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsDTO;
+import com.LittleLanka.product_service.dto.response.ResponseGetAllProductsWithStock;
+import com.LittleLanka.product_service.dto.response.ResponseGetProductDTO;
+import com.LittleLanka.product_service.entity.enums.CatagoryType;
+import org.springframework.core.io.Resource;
 
 import java.util.List;
+
 
 public interface ProductService {
     ProductDTO saveProduct(RequestSaveProductDto requestSaveProductDTO);
 
-    Double getPriceByDateAndProductId(String date, Long id);
+    PaginatedResponseGetAllProductsDTO getAllProducts(int page, int size);
 
-    List<ResponsePriceListDTO> getPriceListByDate(String date);
+    PaginatedResponseGetAllProductsDTO getAllProductsByName(String productName, int page, int size);
 
-    StockDTO initializeStock(StockDTO stockDTO);
+    PaginatedResponseGetAllProductsDTO getAllProductsByStatus(boolean status, int page, int size);
 
-    PriceUpdateDTO updatePrice(RequestPriceUpdateDto requestPriceUpdateDto);
+    PaginatedResponseGetAllProductsDTO getAllProductsByCategory(CatagoryType category, int page, int size);;
 
-    StockDTO updateStockByIdQty(RequestStockUpdateDto requestStockUpdate);
+    List<ResponseGetAllProductsDTO> getAllProductsNormal();
+
+    Resource getImageByUrl(String url);
+
+    ProductDTO updateProduct(RequestUpdateProductDTO requestUpdateProductDTO, int productId);
+
+    List<ResponseGetAllProductsWithStock> getAllProductByOutlet(int outletId);
+
+    ResponseGetProductDTO getProductById(int productId);
+
+    List<ResponseGetAllProductsWithStock> getAllProductsForOutlet(int outletId);
+
+    ProductDTO updateProductStatusById(Long productId);
+
 }
